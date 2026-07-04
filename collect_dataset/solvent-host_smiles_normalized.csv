@@ -1,0 +1,257 @@
+﻿Molecule,Count,SMILES,smiles_normalization
+toluene,3253,CC1=CC=CC=C1,Cc1ccccc1
+pure solid,1537,,
+dpepo,729,O=P(c1ccccc1)(c1ccccc1)c1ccccc1Oc1ccccc1P(=O)(c1ccccc1)c1ccccc1,O=P(c1ccccc1)(c1ccccc1)c1ccccc1Oc1ccccc1P(=O)(c1ccccc1)c1ccccc1
+dichloromethane,725,ClCCl,ClCCl
+cbp,680,c1ccc2c(c1)c1ccccc1n2-c1ccc(-c2ccc(-n3c4ccccc4c4ccccc43)cc2)cc1,c1ccc2c(c1)c1ccccc1n2-c1ccc(-c2ccc(-n3c4ccccc4c4ccccc43)cc2)cc1
+thf,621,C1CCOC1,C1CCOC1
+mcbp,524,c1cc(-c2cccc(-n3c4ccccc4c4ccccc43)c2)cc(-n2c3ccccc3c3ccccc32)c1,c1cc(-c2cccc(-n3c4ccccc4c4ccccc43)c2)cc(-n2c3ccccc3c3ccccc32)c1
+mcp,504,c1cc(-n2c3ccccc3c3ccccc32)cc(-n2c3ccccc3c3ccccc32)c1,c1cc(-n2c3ccccc3c3ccccc32)cc(-n2c3ccccc3c3ccccc32)c1
+pmma,492,[*]CC(C)(C(OC)=O)[*],*CC(*)(C)C(=O)OC
+hexane,386,CCCCCC,CCCCCC
+2-methyltetrahydrofuran,295,CC1OCCC1,CC1CCCO1
+zeonex,233,[*]CC1C(C2CCC3C2)C3C(C[*])C1,*CC1CC(C*)C2C3CCC(C3)C12
+ppf,220,O=P(c1ccccc1)(c1ccccc1)c1ccc2oc3ccc(P(=O)(c4ccccc4)c4ccccc4)cc3c2c1,O=P(c1ccccc1)(c1ccccc1)c1ccc2oc3ccc(P(=O)(c4ccccc4)c4ccccc4)cc3c2c1
+acetonitrile,209,CC#N,CC#N
+cyclohexane,204,C1CCCCC1,C1CCCCC1
+dmf,171,CN(C=O)C,CN(C)C=O
+chloroform,167,ClC(Cl)Cl,ClC(Cl)Cl
+ethyl acetate,141,CCOC(C)=O,CCOC(C)=O
+mcpcn,122,N#Cc1ccc2c(c1)c1ccccc1n2-c1cccc(-n2c3ccccc3c3ccccc32)c1,N#Cc1ccc2c(c1)c1ccccc1n2-c1cccc(-n2c3ccccc3c3ccccc32)c1
+ps,114,[*]C(C1=CC=CC=C1)C[*],*CC(*)c1ccccc1
+ppt,89,O=P(c1ccccc1)(c1ccccc1)c1ccc2sc3ccc(P(=O)(c4ccccc4)c4ccccc4)cc3c2c1,O=P(c1ccccc1)(c1ccccc1)c1ccc2sc3ccc(P(=O)(c4ccccc4)c4ccccc4)cc3c2c1
+26dczppy,75,c1cc(-c2cccc(-c3cccc(-n4c5ccccc5c5ccccc54)c3)n2)cc(-n2c3ccccc3c3ccccc32)c1,c1cc(-c2cccc(-c3cccc(-n4c5ccccc5c5ccccc54)c3)n2)cc(-n2c3ccccc3c3ccccc32)c1
+dmso,64,CS(C)=O,CS(C)=O
+methylcyclohexane,60,CC1CCCCC1,CC1CCCCC1
+methanol,53,CO,CO
+diethyl ether,52,CCOCC,CCOCC
+tpbi,47,c1ccc(-n2c(-c3cc(-c4nc5ccccc5n4-c4ccccc4)cc(-c4nc5ccccc5n4-c4ccccc4)c3)nc3ccccc32)cc1,c1ccc(-n2c(-c3cc(-c4nc5ccccc5n4-c4ccccc4)cc(-c4nc5ccccc5n4-c4ccccc4)c3)nc3ccccc32)cc1
+dbfpo,46,O=P(c1ccccc1)(c1ccccc1)c1ccc2oc3ccc(P(=O)(c4ccccc4)c4ccccc4)cc3c2c1,O=P(c1ccccc1)(c1ccccc1)c1ccc2oc3ccc(P(=O)(c4ccccc4)c4ccccc4)cc3c2c1
+acetone,44,CC(C)=O,CC(C)=O
+water,38,O,O
+tcta,37,c1ccc2c(c1)c1ccccc1n2-c1ccc(N(c2ccc(-n3c4ccccc4c4ccccc43)cc2)c2ccc(-n3c4ccccc4c4ccccc43)cc2)cc1,c1ccc2c(c1)c1ccccc1n2-c1ccc(N(c2ccc(-n3c4ccccc4c4ccccc43)cc2)c2ccc(-n3c4ccccc4c4ccccc43)cc2)cc1
+czsi,33,CC(C)(C)c1ccc(-n2c3ccc([Si](c4ccccc4)(c4ccccc4)c4ccccc4)cc3c3cc([Si](c4ccccc4)(c4ccccc4)c4ccccc4)ccc32)cc1,CC(C)(C)c1ccc(-n2c3ccc([Si](c4ccccc4)(c4ccccc4)c4ccccc4)cc3c3cc([Si](c4ccccc4)(c4ccccc4)c4ccccc4)ccc32)cc1
+mcbp-cn,33,N#Cc1cc(-c2cccc(-n3c4ccccc4c4ccccc43)c2)cc(-n2c3ccccc3c3ccccc32)c1,N#Cc1cc(-c2cccc(-n3c4ccccc4c4ccccc43)c2)cc(-n2c3ccccc3c3ccccc32)c1
+dioxane,28,O1CCOCC1,C1COCCO1
+bcpo,24,O=P(c1ccccc1)(c1ccc(-n2c3ccccc3c3ccccc32)cc1)c1ccc(-n2c3ccccc3c3ccccc32)cc1,O=P(c1ccccc1)(c1ccc(-n2c3ccccc3c3ccccc32)cc1)c1ccc(-n2c3ccccc3c3ccccc32)cc1
+ethanol,23,CCO,CCO
+cztrz,21,c1ccc(-c2nc(-c3ccccc3)nc(-c3cccc(-c4cccc(-n5c6ccccc6c6ccccc65)c4)c3)n2)cc1,c1ccc(-c2nc(-c3ccccc3)nc(-c3cccc(-c4cccc(-n5c6ccccc6c6ccccc65)c4)c3)n2)cc1
+chlorobenzene,20,ClC1=CC=CC=C1,Clc1ccccc1
+pbict,17,c1ccc(-c2nc(-n3c4ccccc4c4ccc5c6ccccc6n(-c6ccccc6)c5c43)nc(-n3c4ccccc4c4ccc5c6ccccc6n(-c6ccccc6)c5c43)n2)cc1,c1ccc(-c2nc(-n3c4ccccc4c4ccc5c6ccccc6n(-c6ccccc6)c5c43)nc(-n3c4ccccc4c4ccc5c6ccccc6n(-c6ccccc6)c5c43)n2)cc1
+phczbcz,16,C1(C2=CC(C(C=CC=C3)=C3N4C5=CC=CC=C5)=C4C=C2)=C(N6C(C=CC=C7)=C7C8=C6C=CC(N9C(C=CC=C%10)=C%10C%11=C9C=CC=C%11)=C8)C=CC=C1,c1ccc(-n2c3ccccc3c3cc(-c4ccccc4-n4c5ccccc5c5cc(-n6c7ccccc7c7ccccc76)ccc54)ccc32)cc1
+phenyl benzoate,15,C1=CC=C(C=C1)C(=O)OC2=CC=CC=C2,O=C(Oc1ccccc1)c1ccccc1
+dmic-trz,14,N1(C2=CC=CC(C3=NC(C4=CC=CC=C4)=NC(C4=CC=CC=C4)=N3)=C2)C2=C(C=CC=C2)C2=C1C=C1C(C)(C)C3=C(C1=C2)C=CC=C3,CC1(C)c2ccccc2-c2cc3c4ccccc4n(-c4cccc(-c5nc(-c6ccccc6)nc(-c6ccccc6)n5)c4)c3cc21
+mcpbc,13,C1(N2C3=C(C4=C2C=CC(N5C6=C(C7=C5C=CC=C7)C=CC=C6)=C4)C=CC=C3)=CC(N8C(C=CC=C9)=C9C%10=C8C=CC=C%10)=CC=C1,c1cc(-n2c3ccccc3c3ccccc32)cc(-n2c3ccccc3c3cc(-n4c5ccccc5c5ccccc54)ccc32)c1
+pyd2,12,c1cc(-n2c3ccccc3c3ccccc32)nc(-n2c3ccccc3c3ccccc32)c1,c1cc(-n2c3ccccc3c3ccccc32)nc(-n2c3ccccc3c3ccccc32)c1
+simcp2,12,c1ccc([Si](c2ccccc2)(c2cc(-n3c4ccccc4c4ccccc43)cc(-n3c4ccccc4c4ccccc43)c2)c2cc(-n3c4ccccc4c4ccccc43)cc(-n3c4ccccc4c4ccccc43)c2)cc1,c1ccc([Si](c2ccccc2)(c2cc(-n3c4ccccc4c4ccccc43)cc(-n3c4ccccc4c4ccccc43)c2)c2cc(-n3c4ccccc4c4ccccc43)cc(-n3c4ccccc4c4ccccc43)c2)cc1
+tcz1,10,CCC(CCCC)CN1C2=C(C3=C1C=CC(N4C5=C(C6=C4C=CC=C6)C=CC=C5)=C3)C=C(N7C(C=CC=C8)=C8C9=C7C=CC=C9)C=C2,CCCCC(CC)Cn1c2ccc(-n3c4ccccc4c4ccccc43)cc2c2cc(-n3c4ccccc4c4ccccc43)ccc21
+isopropyl ether,10,CC(C)OC(C)C,CC(C)OC(C)C
+tmpypb,9,c1cncc(-c2cccc(-c3cc(-c4cccc(-c5cccnc5)c4)cc(-c4cccc(-c5cccnc5)c4)c3)c2)c1,c1cncc(-c2cccc(-c3cc(-c4cccc(-c5cccnc5)c4)cc(-c4cccc(-c5cccnc5)c4)c3)c2)c1
+benzene,9,C1=CC=CC=C1,c1ccccc1
+heptane,9,CCCCCCC,CCCCCCC
+o-dichlorobenzene,8,ClC1=CC=CC=C1Cl,Clc1ccccc1Cl
+pva,8,[*]CC(O)[*],*CC(*)O
+mcppfp,7,c1(C2=CC(C(C=CC=N3)=C3O4)=C4N=C2)cc(n(c5c6cccc5)c7c6cccc7)ccc1,c1cc(-c2cnc3oc4ncccc4c3c2)cc(-n2c3ccccc3c3ccccc32)c1
+czacsf,7,CC1(C2=CC=CC=C2N(C3=CC=CC=C31)C4=CC=C(C=C4)S(=O)(=O)C5=CC=C(C=C5)N6C7=CC=CC=C7C8=CC=CC=C86)C,CC1(C)c2ccccc2N(c2ccc(S(=O)(=O)c3ccc(-n4c5ccccc5c5ccccc54)cc3)cc2)c2ccccc21
+mcppy2po,7,O=P(C1=CC=CC=C1)(C2=CC=CC=C2)C3=NC(C4=CC(N5C(C=CC=C6)=C6C7=C5C=CC=C7)=CC(N8C(C=CC=C9)=C9C%10=C8C=CC=C%10)=C4)=CC=C3,O=P(c1ccccc1)(c1ccccc1)c1cccc(-c2cc(-n3c4ccccc4c4ccccc43)cc(-n3c4ccccc4c4ccccc43)c2)n1
+triethylamine,6,CCN(CC)CC,CCN(CC)CC
+carbon tetrachloride,6,ClC(Cl)(Cl)Cl,ClC(Cl)(Cl)Cl
+poly,6,,
+rh,6,N1(C2=NC3=CC=CC=C3N=C2C4=CC=CC(C5=CC=CC=C5)=C4)C(C=CC6=C7C8=CC=C6)=C7C9=C1C=CC=C9C%10=C8C=CC=C%10,c1ccc(-c2cccc(-c3nc4ccccc4nc3-n3c4cccc5c4c4c6c(cccc6ccc43)-c3ccccc3-5)c2)cc1
+tspo1,6,O=P(C1=CC=CC=C1)(C2=CC=CC=C2)C(C=C3)=CC=C3[Si](C4=CC=CC=C4)(C5=CC=CC=C5)C6=CC=CC=C6,O=P(c1ccccc1)(c1ccccc1)c1ccc([Si](c2ccccc2)(c2ccccc2)c2ccccc2)cc1
+gcla,5,CC(CCC(=O)O)C1CCC2C3C(O)CC4CC(O)CCC4(C)C3CC(O)C12C,CC(CCC(=O)O)C1CCC2C3C(O)CC4CC(O)CCC4(C)C3CC(O)C12C
+o-czoxd,5,C12=CC=CC=C1C3=CC=CC=C3N2C4=CC=CC=C4C5=NN=C(C6=CC=CC=C6N7C8=CC=CC=C8C9=CC=CC=C97)O5,c1ccc(-n2c3ccccc3c3ccccc32)c(-c2nnc(-c3ccccc3-n3c4ccccc4c4ccccc43)o2)c1
+dma,5,CC(N(C)C)=O,CC(=O)N(C)C
+pvc film,5,[*]CC(Cl)[*],*CC(*)Cl
+butyl ether,5,CCCCOCCCC,CCCCOCCCC
+anisole,5,COC1=CC=CC=C1,COc1ccccc1
+h2,4,,
+ipmma,4,,
+p-phbczph,4,,
+"1,3-bis benzene",4,,
+mcpcz,4,,
+,4,,
+meobp,4,,
+p-xylene,4,,
+pbs,4,,
+p-tpa-o-oxd,4,,
+"1,2-dichloroethane",4,,
+deaerated ethanol,4,,
+dibutyl ether,4,,
+dbfdpo,4,,
+sicz,4,,
+dobna-oar,4,,
+99% water in thf,3,,
+pic-trz,3,,
+bis[2- phenyl]ether oxide,3,,
+ccp,3,,
+mc,3,,
+dspe-peg2000,3,,
+mcbptrz,3,,
+dpetpo,3,,
+dmfl-cbp,3,,
+"3,5dczppy",3,,
+pvp,3,,
+35dczppy,3,,
+g-odots,3,,
+a-odots,3,,
+"tcta, 26dczppy",3,,
+polyethylene,3,,
+o-dicbzbz,3,,
+epa,3,,
+lggh-198,2,,
+isopropanol,2,,
+tetrahydropyran,2,,
+phczdcz,2,,
+device,2,,
+tpp,2,,
+pvk,2,,
+f127,2,,
+psmac,2,,
+99% water,2,,
+pvah,2,,
+phosphate-buffered saline,2,,
+et3n,2,,
+尾-estradiol,2,,
+benzophenone,2,,
+hela cells,2,,
+o-cbp,2,,
+trispcz,2,,
+bis[2- phenyl] ether oxide,2,,
+czps,2,,
+cz-3czcn,2,,
+crystal c,2,,
+polysulfone,2,,
+"2,2-dimethyltetrahydrofuran",2,,
+pabn,2,,
+cpds,2,,
+oppc,2,,
+pcz-czcn,2,,
+psf,2,,
+crystal c1,2,,
+yellow solid,2,,
+madn,2,,
+dpbcz,1,,
+paraffin,1,,
+su-8,1,,
+pvt,1,,
+npb,1,,
+sm-66,1,,
+nanowires,1,,
+benzonitrile,1,,
+c[3]p,1,,
+pmma + camphoric anhydride,1,,
+acetic acid,1,,
+bsbcz,1,,
+phcbbcz,1,,
+8cztps,1,,
+pmma; ph-c12,1,,
+pmma; da-c12,1,,
+1d-mss,1,,
+4-methylbenzophenone,1,,
+er@y dcnps,1,,
+4-methoxybenzophenone,1,,
+paa,1,,
+"4,4鈥?di -1,1鈥?biphenyl",1,,
+tartaric acid gel,1,,
+succinic acid gel,1,,
+siczcz,1,,
+f127 micelles,1,,
+dbtdpo,1,,
+cubes,1,,
+ddbft,1,,
+dichlorobenzene,1,,
+f_r-solid,1,,
+f_r-crystal,1,,
+f_o-crystal,1,,
+f_y-crystal,1,,
+h_o-crystal,1,,
+h_y-crystal,1,,
+h_g-solid,1,,
+pvdf-hfp,1,,
+bucn,1,,
+polydimethyl silicone oil,1,,
+ppo21,1,,
+4cz2bn,1,,
+ugh,1,,
+ugh-3,1,,
+tpsi-f,1,,
+tcm,1,,
+pyd,1,,
+butanol,1,,
+triphenylphosphine,1,,
+toluene-zeonex i,1,,
+cyclo olefin polymer,1,,
+toluene-zeonex ii,1,,
+pbs buffer with ntr and nadh,1,,
+crystal 1b,1,,
+crystal 1a,1,,
+as prepared solid,1,,
+n-diethylether,1,,
+ionic exciplex host,1,,
+2-mthf,1,,
+n-dibutylether,1,,
+poloxamer 188,1,,
+2-me thf,1,,
+mesitylene,1,,
+meph,1,,
+npd,1,,
+ch3oh,1,,
+h1-pxz-r crystal,1,,
+h1-pxz-o crystal,1,,
+hepes buffer,1,,
+mcp; dpepo,1,,
+pla,1,,
+a-npd,1,,
+butyronitrile,1,,
+sf3-trz,1,,
+dczdpy,1,,
+propylene carbonate,1,,
+n-butyl ether,1,,
+yp,1,,
+cry-o,1,,
+cry-yg,1,,
+amo-y,1,,
+amo-g,1,,
+glass state,1,,
+b4pympm,1,,
+pooh,1,,
+sitrzc2,1,,
+35tcc,1,,
+34tcc,1,,
+26tcc,1,,
+25tcc,1,,
+24tcc,1,,
+omebp,1,,
+gp,1,,
+hm5,1,,
+mcbpbn,1,,
+beta-estradiol,1,,
+23tcc,1,,
+ph 5.0 naoac buffer,1,,
+phcz,1,,
+"tcta, cbp",1,,
+"mcp, dpepo",1,,
+dcdpa,1,,
+c. perfringens,1,,
+tissue section,1,,
+mouse skin,1,,
+cbz-f film,1,,
+dpepo-pvc,1,,
+tbp,1,,
+2tcz2czbn,1,,
+wp-1,1,,
+po-t2t,1,,
+dpepo or pmma,1,,
+ptbf-phcz,1,,
+dspe-mpeg2000 micelles in normal saline,1,,
+normal saline,1,,
+boric acid,1,,
+polymorph b,1,,
+o-xylene,1,,
+"1,3,5-benzenetricarboxylic acid",1,,
+dic-trz,1,,
+t-bp,1,,
+t-yp,1,,
+wp-2,1,,
+mcpbp,1,,
