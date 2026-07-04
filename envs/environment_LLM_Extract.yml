@@ -1,0 +1,9 @@
+name: LLM_Extract
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9.13
+  - pip
+  - pip:
+      - -r requirements_LLM_Extract.txt
