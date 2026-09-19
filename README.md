@@ -292,11 +292,12 @@ cd iter
 python auto_evaluation_momap.py
 ```
 
-This controller starts from screened candidates and runs structure generation, PM7 optimization, TDDFT EST calculation, S0/S1/T1 optimization, NACME, SOC, emission TDDFT, and optional MOMAP calculation.
+This controller starts from screened candidates and runs structure generation, PM7 optimization, TDDFT ΔEST calculation, functional selection, S0/S1/T1 optimization, NACME, SOC, emission TDDFT, and optional MOMAP calculation.
 
 Important sub-scripts include:
 
 ```text
+momap_method.py
 cand-smiles2xyz.py
 pm7-1.py
 pm7-2.sh
@@ -320,7 +321,7 @@ grep_momap.sh
 Example:
 
 ```bash
-python auto_evaluation_momap.py --csv molecules_emission_all_top6.csv --delta-est-threshold 0.30 --skip-momap
+python auto_evaluation_momap.py --csv molecules_emission_all_top6.csv --functional MN15 --basis cc-pVDZ --calculation-run-mode controller --delta-est-threshold 0.30 --momap-mode run
 ```
 
 ---
