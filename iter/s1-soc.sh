@@ -11,6 +11,11 @@ fi
 
 load_est_numbers
 
+# Saved settings also support manually rerunning this stage.
+if [ -f "$SCRIPT_DIR/momap_method.env" ]; then
+    source "$SCRIPT_DIR/momap_method.env" || exit 1
+fi
+
 header_content='! cc-pVDZ RIJCOSX miniprint tightSCF
 %maxcore  15000
 %pal nprocs   64 end
@@ -27,6 +32,13 @@ printlevel 3
 end
 * xyz   0   1
 '
+
+if [ -n "${FIREFLY_SOC_HEADER:-}" ]; then
+    header_content="$FIREFLY_SOC_HEADER"
+elif [ "${FIREFLY_FUNCTIONAL:-MN15}" != "MN15" ] || [ "${FIREFLY_BASIS:-cc-pVDZ}" != "cc-pVDZ" ]; then
+    echo "ERROR: Run auto_evaluation_momap.py to configure ORCA SOC first." >&2
+    exit 1
+fi
 
 submitted_count=0
 skipped_count=0

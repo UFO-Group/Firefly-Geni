@@ -24,6 +24,7 @@ For debugging:
 from __future__ import annotations
 
 import argparse
+from momap_method import add_method_arguments, configure_method, save_method
 import os
 import re
 import shutil
@@ -379,7 +380,9 @@ def main():
     parser.add_argument("--calculation-run-mode", choices=["ask", "interactive", "controller"], default="ask", help="Control mode for the long evaluation calculation workflow.")
     parser.add_argument("--controller-resume", choices=["none", "calculation"], default="none", help="Internal flag used by a Slurm controller job to resume from the calculation stage.")
     parser.add_argument("--verbose", action="store_true", help="Print full stdout from all child scripts.")
+    add_method_arguments(parser)
     args = parser.parse_args()
+    method = configure_method(args)
 
     VERBOSE = bool(args.verbose or os.environ.get("FIREFLY_VERBOSE", "0") == "1")
 
@@ -395,6 +398,7 @@ def main():
     log(f"Output mode: {'verbose' if VERBOSE else 'concise'}")
 
     evaluation_dir.mkdir(parents=True, exist_ok=True)
+    save_method(gjf_dir, method)
 
     final_csv = select_final_csv(evaluation_dir, args.csv)
     log(f"Selected final evaluation CSV: {final_csv.name}")
@@ -433,6 +437,8 @@ def main():
                 "--controller-resume",
                 "calculation",
             ]
+            controller_args.extend(["--functional", method["functional"], "--basis", method["basis"],
+                                    "--orca-functional", method["orca_functional"], "--orca-basis", method["orca_basis"]])
             if args.verbose:
                 controller_args.append("--verbose")
 

@@ -1,0 +1,103 @@
+"""Method selection for the post-screening MOMAP preparation stages (Python 3.7+)."""
+import json
+import os
+import re
+import shlex
+import sys
+from pathlib import Path
+
+PRESETS = {'mn15': ('MN15', 'MN15'), 'b3lyp': ('B3LYP', 'B3LYP/G'),
+           'pbe0': ('PBE1PBE', 'PBE0'), 'pbe1pbe': ('PBE1PBE', 'PBE0')}
+
+
+def add_method_arguments(parser):
+    parser.add_argument('--functional', help='Gaussian functional; omit for selection menu.')
+    parser.add_argument('--basis', help='Gaussian basis (default cc-pVDZ).')
+    parser.add_argument('--orca-functional', help='Corresponding ORCA functional keyword for SOC.')
+    parser.add_argument('--orca-basis', help='Corresponding ORCA basis keyword for SOC.')
+
+
+def token(value, label, basis=False, orca=False):
+    pattern = r'[A-Za-z0-9][A-Za-z0-9+*(),_.-]*' if basis else r'[A-Za-z0-9][A-Za-z0-9_.-]*'
+    if orca and not basis:
+        pattern = r'[A-Za-z0-9][A-Za-z0-9_./-]*'
+    if not re.fullmatch(pattern, value or ''):
+        raise ValueError('Invalid {}: enter one keyword, not a route line or shell command.'.format(label))
+    if basis and value.lower() in ('gen', 'genecp', 'chkbasis'):
+        raise ValueError('Custom basis blocks/checkpoint bases are not supported by this interface.')
+    return value
+
+
+def configure_method(args):
+    interactive = sys.stdin.isatty() and args.controller_resume == 'none'
+    functional = args.functional
+    if functional is None and interactive:
+        print('\nMOMAP preparation method (S0/S1/T1, NACME, SOC, S1-TD)')
+        print('1. MN15 (default)\n2. B3LYP\n3. PBE0\n4. Custom')
+        while True:
+            choice = input('Select functional [1]: ').strip() or '1'
+            if choice in ('1', '2', '3', '4'):
+                break
+            print('Enter 1, 2, 3 or 4.')
+        functional = {'1': 'MN15', '2': 'B3LYP', '3': 'PBE0'}.get(choice)
+        if functional is None:
+            functional = input('Gaussian functional keyword: ').strip()
+    functional = functional or 'MN15'
+    preset = PRESETS.get(functional.lower())
+    functional = preset[0] if preset else functional
+    basis = args.basis
+    if basis is None and interactive:
+        basis = input('Gaussian basis [cc-pVDZ]: ').strip()
+    basis = basis or 'cc-pVDZ'
+    orca_functional = args.orca_functional or (preset[1] if preset else None)
+    if orca_functional is None and interactive:
+        orca_functional = input('Corresponding ORCA SOC functional keyword: ').strip()
+    if not orca_functional:
+        raise ValueError('Custom functional requires --orca-functional; no automatic guess is made.')
+    orca_basis = args.orca_basis
+    # Only names shared directly by both input formats are inferred.
+    if orca_basis is None and re.fullmatch(r'(aug-)?cc-pV[DTQ56]Z', basis, re.I):
+        orca_basis = basis
+    if orca_basis is None and interactive:
+        orca_basis = input('Corresponding ORCA SOC basis keyword: ').strip()
+    if not orca_basis:
+        raise ValueError('This basis requires --orca-basis with the corresponding ORCA keyword.')
+    result = dict(functional=token(functional, 'Gaussian functional'),
+                  basis=token(basis, 'Gaussian basis', basis=True),
+                  orca_functional=token(orca_functional, 'ORCA functional', orca=True),
+                  orca_basis=token(orca_basis, 'ORCA basis', basis=True))
+    print('Effective Gaussian method: {functional}/{basis}'.format(**result), flush=True)
+    print('Effective ORCA SOC method: {orca_functional}/{orca_basis}'.format(**result), flush=True)
+    print('Applies after Delta EST screening. PM7 and screening TDDFT retain their existing settings.', flush=True)
+    return result
+
+
+def soc_header(method):
+    if method['orca_functional'].upper() == 'MN15':
+        keyword = ''
+        block = '%method\nmethod dft\n  exchange hyb_mgga_x_mn15\n  correlation mgga_c_mn15\nend\n'
+    else:
+        keyword = method['orca_functional'] + ' '
+        block = ''
+    return ('! ' + keyword + method['orca_basis'] + ' RIJCOSX miniprint tightSCF\n'
+            '%maxcore  15000\n%pal nprocs   64 end\n' + block +
+            '%tddft\nnroots 10\ndosoc true\nTDA false\nprintlevel 3\nend\n* xyz   0   1\n')
+
+
+def save_method(gjf_dir, method):
+    gjf_dir = Path(gjf_dir)
+    manifest = gjf_dir / 'momap_method.json'
+    if manifest.exists():
+        if json.loads(manifest.read_text(encoding='utf-8')) != method:
+            raise RuntimeError('Different saved MOMAP method in {}. Back up/move the existing gjf_files directory before starting another method.'.format(gjf_dir))
+    elif any(gjf_dir.glob('est-*/s0')):
+        raise RuntimeError('Existing S0 results have no method manifest in {}. Back up/move gjf_files before this test to avoid mixing old results.'.format(gjf_dir))
+    gjf_dir.mkdir(parents=True, exist_ok=True)
+    values = {'FIREFLY_FUNCTIONAL': method['functional'], 'FIREFLY_BASIS': method['basis'],
+              'FIREFLY_SOC_HEADER': soc_header(method)}
+    env_text = '# Generated by auto_evaluation_momap.py; Gaussian and ORCA settings.\n'
+    env_text += ''.join('export {}={}\n'.format(k, shlex.quote(v)) for k, v in values.items())
+    with (gjf_dir / 'momap_method.env').open('w', encoding='utf-8', newline='\n') as f:
+        f.write(env_text)
+    manifest.write_text(json.dumps(method, indent=2) + '\n', encoding='utf-8')
+    os.environ.update(values)

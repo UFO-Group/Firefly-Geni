@@ -11,15 +11,20 @@ fi
 
 load_est_numbers
 
-header_content=$'%nprocshared=64
+# Saved settings also support manually rerunning this stage.
+if [ -f "$SCRIPT_DIR/momap_method.env" ]; then
+    source "$SCRIPT_DIR/momap_method.env" || exit 1
+fi
+
+header_content="%nprocshared=64
 %mem=5000MW
 %chk=TADF.chk
-# td=(50-50) mn15/cc-pvdz scrf(solvent=Toluene)
+# td=(50-50) ${FIREFLY_FUNCTIONAL:-MN15}/${FIREFLY_BASIS:-cc-pVDZ} scrf(solvent=Toluene)
 
 1111
 
 0 1
-'
+"
 
 submitted_count=0
 skipped_count=0

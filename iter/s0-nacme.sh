@@ -11,15 +11,20 @@ fi
 
 load_est_numbers
 
-header_content=$'%nprocshared=64
+# Saved settings also support manually rerunning this stage.
+if [ -f "$SCRIPT_DIR/momap_method.env" ]; then
+    source "$SCRIPT_DIR/momap_method.env" || exit 1
+fi
+
+header_content="%nprocshared=64
 %mem=5000MW
 %chk=TADF.chk
-#p td mn15/cc-pvdz prop=(fitcharge,field) iop(6/22=-4, 6/29=1, 6/30=0, 6/17=2) nosymm
+#p td ${FIREFLY_FUNCTIONAL:-MN15}/${FIREFLY_BASIS:-cc-pVDZ} prop=(fitcharge,field) iop(6/22=-4, 6/29=1, 6/30=0, 6/17=2) nosymm
 
 1111
 
 0 1
-'
+"
 
 submitted_count=0
 skipped_count=0
