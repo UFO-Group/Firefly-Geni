@@ -224,6 +224,7 @@ def ask_extra_args_for_single_task(task: Task) -> List[str]:
         print("  --candidate-dir 1 --env1 toluene --env2 dpepo --batch-size 100 --pred-partition gpu --pred-node gpu3 --pred-gpu-card 0 --llm-mode skip --top-per-region 100 --llm-run-mode controller")
     elif task.number == 8:
         print("Examples:")
+        print("  --csv molecules_emission_all_top6.csv --functional MN15 --basis cc-pVDZ --calculation-run-mode controller --delta-est-threshold 0.30 --momap-mode run")
         print("  --csv molecules_emission_all_top6.csv --calculation-run-mode controller --delta-est-threshold 0.30 --momap-mode skip")
         print("  --csv molecules_emission_all_top6.csv --calculation-run-mode interactive")
 
