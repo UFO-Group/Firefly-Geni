@@ -2,8 +2,8 @@ import pandas as pd
 
 def calculate_smiles_length(smiles, charset_double):
     """
-    Calculate the actual token length of a single SMILES.
-    Treat diatomic atoms (such as Si, Cl, Se, Br, Ge) as 1 unit length.
+    计算单个 SMILES 的真实 Token 长度。
+    将双字母原子（如 Si, Cl, Se, Br, Ge）视为 1 个单位长度。
     """
     if pd.isna(smiles) or not isinstance(smiles, str):
         return 0
@@ -11,7 +11,7 @@ def calculate_smiles_length(smiles, charset_double):
     length = 0
     i = 0
     while i < len(smiles):
-        # Prioritize determining whether it is a two-letter atom
+        # 优先判断是否为双字母原子
         if i + 1 < len(smiles) and smiles[i:i+2] in charset_double:
             length += 1
             i += 2

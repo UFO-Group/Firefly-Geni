@@ -195,10 +195,10 @@ def merge_active_learning_data(new_csv_path, orig_base_csv, old_npy_dir, output_
     print("\n🎉 Iteration 数据准备就绪！原有测试集已完美保留。")
 
 if __name__ == "__main__":
-    new_csv_path = "../Darwin_LLaMa_enhanced10/gen_epoch049_random_gen/iter1_diversity2-2/iter1_with_DFT_est.csv" 
+    new_csv_path = "../Darwin_LLaMa_Iter1-0.6-dft-1-lr3/gen/iter2-0.58-2/iter2_with_DFT_est.csv" 
     orig_base_csv = "../../dataset_tadf/dataset_gen/gendata_est_sa/est-all_sa.csv" 
-    old_npy_dir = "../../dataset_tadf/dataset_gen/gendata_est_sa/enhanced10" 
-    output_dir = "../Darwin_LLaMa_enhanced10/gen_epoch049_random_gen/iter1_diversity2-2/" 
+    old_npy_dir = "../Darwin_LLaMa_enhanced10/gen_epoch049_random_gen/iter1_diversity2-2/" 
+    output_dir = "../Darwin_LLaMa_Iter1-0.6-dft-1-lr3/gen/iter2-0.58-2/" 
     
     merge_active_learning_data(
         new_csv_path=new_csv_path,

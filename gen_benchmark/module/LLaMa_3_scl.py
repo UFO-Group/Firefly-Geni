@@ -6,7 +6,7 @@ from typing import Optional
 
 
 # ==========================================
-# 1. LLaMA core components: RMSNorm & RoPE
+# 1. LLaMA 核心组件：RMSNorm & RoPE
 # ==========================================
 class RMSNorm(nn.Module):
     def __init__(self, dim: int, eps: float = 1e-6):
@@ -52,12 +52,12 @@ def apply_rotary_emb(
 
 
 # ==========================================
-# 2. Core components of LLaMA: Attention & SwiGLU
+# 2. LLaMA 核心组件：Attention & SwiGLU
 # ==========================================
 class LlamaAttention(nn.Module):
     def __init__(self, dim, n_heads, dropout=0.1):
         super().__init__()
-        assert dim % n_heads == 0, "dim must be divisible by n_heads"
+        assert dim % n_heads == 0, "dim 必须能被 n_heads 整除"
         self.n_heads = n_heads
         self.head_dim = dim // n_heads
 
@@ -124,19 +124,19 @@ class TransformerBlock(nn.Module):
 
 
 # ==========================================
-# 3. DarwinLLaMA Master Model (Two-Condition Pure Version: EST + SAScore)
+# 3. DarwinLLaMA 主模型（双条件纯净版：EST + SAScore）
 # ==========================================
 class DarwinLLaMA(nn.Module):
     """
-    Pure two-condition mechanism
-    1. Continuous property (EST, SAScore) -> prefix embedding (length 2)
-    2. During training, prop_mask can be passed in to control which properties are effective
-    3. For masked properties, use learnable null prefix
+    纯净双条件机制：
+    1. 连续性质 (EST, SAScore) -> prefix embedding (长度为2)
+    2. 训练时可传入 prop_mask，控制哪些性质有效
+    3. 对于被 mask 的性质，使用 learnable null prefix
     """
     def __init__(
         self,
         vocab_size,
-        prop_len=2,  
+        prop_len=2,  # 默认就是 2
         dim=512,
         n_layers=4,
         n_heads=8,
@@ -153,14 +153,14 @@ class DarwinLLaMA(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
         # ==========================================
-        # 🌟 Thoroughly purify it into a dual-attribute mapping layer
+        # 🌟 彻底净化为双属性映射层
         # ==========================================
         if self.prop_len == 2:
             self.est_proj = nn.Sequential(nn.Linear(1, dim), nn.SiLU(), nn.Linear(dim, dim))
             self.sa_proj = nn.Sequential(nn.Linear(1, dim), nn.SiLU(), nn.Linear(dim, dim))
             self.null_prefix = nn.Parameter(torch.zeros(2, dim))
         elif self.prop_len != 0:
-            raise ValueError("🚀 This model has been hard-coded for dual-condition (EST, SAScore) specific use, and prop_len must be either 2 or 0!")
+            raise ValueError("🚀 本模型已硬编码为双条件(EST, SAScore)专用，prop_len 必须为 2 或 0！")
 
         hidden_dim = int(2 * (4 * dim) / 3)
         self.layers = nn.ModuleList([
@@ -180,7 +180,7 @@ class DarwinLLaMA(nn.Module):
 
         self.apply(self._init_weights)
 
-        # Make the null prefix initially closer to the "empty signal"
+        # 让 null prefix 初始更接近“空信号”
         if hasattr(self, "null_prefix"):
             nn.init.normal_(self.null_prefix, mean=0.0, std=0.02)
 
@@ -199,8 +199,8 @@ class DarwinLLaMA(nn.Module):
     ):
         """
         props:     [B, 2]
-        prop_mask: [B, 2], 1 indicates that the property is visible, and 0 indicates that it has been masked
-        return:
+        prop_mask: [B, 2], 1 表示该性质可见，0 表示被 mask
+        返回:
             prop_emb:   [B, 2, dim]
             prefix_len: 2
         """
@@ -228,7 +228,7 @@ class DarwinLLaMA(nn.Module):
             prop_emb = mask_expand * prop_emb + (1.0 - mask_expand) * null_prefix
             return prop_emb, 2
         else:
-             raise ValueError("🚀 This model has been hard-coded as dual-condition dedicated, and the input feature dimension is incorrect!")
+             raise ValueError("🚀 本模型已硬编码为双条件专用，输入特征维度不对！")
 
     def forward(
         self,

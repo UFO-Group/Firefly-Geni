@@ -66,11 +66,11 @@ def augment_new_data(df_new, smiles_col, multiplier):
     return df_augmented
 
 # ==========================================
-# 大一统合并流程 (已适配 DFT_est & SA)
+# 大一统合并流程 (已适配 2 个性质: EST & SA)
 # ==========================================
 def merge_active_learning_data(new_csv_path, orig_base_csv, old_npy_dir, output_dir, aug_multiplier=20):
     print("=" * 60)
-    print("🚀 启动 Active Learning 数据无缝拼接引擎 (高精度 DFT 标签版)")
+    print("🚀 启动 Active Learning 数据无缝拼接引擎 (2D 属性版)")
     print("=" * 60)
     
     # ---------------------------------------------------------
@@ -79,27 +79,26 @@ def merge_active_learning_data(new_csv_path, orig_base_csv, old_npy_dir, output_
     print(f"📂 1. 读取旧 CSV 获取全局归一化参数 (Min/Max): {orig_base_csv}")
     df_orig = pd.read_csv(orig_base_csv)
     
-    # 获取原始训练集的 Min/Max (保持全局尺度一致)
+    # 🌟 修改点 1：只保留 EST 和 SA，删除了 EMI
     norm_params = {
         'EST': {'min': df_orig['Delta_EST_eV'].min(), 'max': df_orig['Delta_EST_eV'].max()},
         'SA':  {'min': df_orig['sa_score'].min(), 'max': df_orig['sa_score'].max()}
     }
 
     # ---------------------------------------------------------
-    # Step 2: 加载新分子并归一化、增强 (核心修改区)
+    # Step 2: 加载新分子并归一化、增强
     # ---------------------------------------------------------
     print(f"\n📂 2. 加载新分子并用旧标准归一化: {new_csv_path}")
     df_new = pd.read_csv(new_csv_path)
     
-    # 🌟 核心修改点：使用高精度的 DFT_est 作为新一轮训练的 EST 标签
-    df_new['Delta_EST_eV_norm'] = (df_new['DFT_est'] - norm_params['EST']['min']) / (norm_params['EST']['max'] - norm_params['EST']['min'])
+    # 👇 完美匹配你的列名：Transform_Delta_EST_eV 和 SA_Score
+    df_new['Delta_EST_eV_norm'] = (df_new['Transform_Delta_EST_eV'] - norm_params['EST']['min']) / (norm_params['EST']['max'] - norm_params['EST']['min'])
     df_new['sa_score_norm'] = (df_new['SA_Score'] - norm_params['SA']['min']) / (norm_params['SA']['max'] - norm_params['SA']['min'])
     
-    # 对 SMILES 列进行增强
-    df_new_aug = augment_new_data(df_new, 'SMILES', multiplier=aug_multiplier) 
+    df_new_aug = augment_new_data(df_new, 'SMILES', multiplier=aug_multiplier)  # 注意：你的新数据列名是 'SMILES' 还是 'TADF_SMILES'？这里假设是 SMILES，如果报错请改回 TADF_SMILES。
 
     # ---------------------------------------------------------
-    # Step 3: 直接加载旧的 NPY 矩阵，保留原有测试集
+    # Step 3: 🌟 核心：直接加载旧的 NPY 矩阵，保留原有测试集
     # ---------------------------------------------------------
     print(f"\n📂 3. 直接读取原有的旧 Numpy 矩阵，不改变原有划分: {old_npy_dir}")
     S_train_old = np.load(os.path.join(old_npy_dir, "Strain.npy"))
@@ -120,9 +119,8 @@ def merge_active_learning_data(new_csv_path, orig_base_csv, old_npy_dir, output_
     # ---------------------------------------------------------
     print("\n📏 4. 检查新分子长度是否越界...")
     charset_double_set = set(charset_list2) 
-    
-    # 指定使用 SMILES 列
-    smiles_col_name = 'SMILES'
+    # ⚠️ 请确保 df_new_aug 里的列名是对的 (SMILES 或 TADF_SMILES)
+    smiles_col_name = 'SMILES' if 'SMILES' in df_new_aug.columns else 'TADF_SMILES'
     new_lengths = df_new_aug[smiles_col_name].apply(lambda x: calculate_smiles_length(x, charset_double_set))
     new_max_len = new_lengths.max() + 5
     
@@ -148,7 +146,7 @@ def merge_active_learning_data(new_csv_path, orig_base_csv, old_npy_dir, output_
     for _, row in df_new_aug.iterrows():
         try:
             tokens, length = tokenize(row[smiles_col_name], charset_dict, charset_list1, charset_list2, final_seq_length)
-            # 组装 2 个属性进入 props 数组 (顺序与最初始训练集严格对齐)
+            # 🌟 修改点 3：只组装 2 个属性进入 props 数组
             props = [row['Delta_EST_eV_norm'], row['sa_score_norm']]
             all_smiles_tokens.append(tokens)
             all_lengths.append(length)
@@ -192,13 +190,13 @@ def merge_active_learning_data(new_csv_path, orig_base_csv, old_npy_dir, output_
     np.save(os.path.join(output_dir, "Ltest.npy"), L_test_old)
     np.save(os.path.join(output_dir, "Ptest.npy"), P_test_old)
     
-    print("\n🎉 Iteration 数据准备就绪！原有测试集已完美保留。")
+    print("\n🎉 Iteration 1 数据准备就绪！原有测试集已完美保留。")
 
 if __name__ == "__main__":
-    new_csv_path = "../Darwin_LLaMa_enhanced10/gen_epoch049_random_gen/iter1_diversity2-2/iter1_with_DFT_est.csv" 
+    new_csv_path = "../Darwin_LLaMa_enhanced10/gen_epoch049_random_gen/iter1_diversity2/iter1.csv" 
     orig_base_csv = "../../dataset_tadf/dataset_gen/gendata_est_sa/est-all_sa.csv" 
     old_npy_dir = "../../dataset_tadf/dataset_gen/gendata_est_sa/enhanced10" 
-    output_dir = "../Darwin_LLaMa_enhanced10/gen_epoch049_random_gen/iter1_diversity2-2/" 
+    output_dir = "../Darwin_LLaMa_enhanced10/gen_epoch049_random_gen/iter1_diversity2/" 
     
     merge_active_learning_data(
         new_csv_path=new_csv_path,

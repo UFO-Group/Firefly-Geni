@@ -5,21 +5,19 @@ from sklearn.model_selection import train_test_split
 from rdkit import Chem
 from tqdm import tqdm
 
-# Import all character set configurations from char.py
+# 👇 1. 从你新建的 char.py 导入所有字符集配置
 from char import charset_dict, charset_list1, charset_list2
 
-# Import the SMILES token length calculation function
+# 👇 2. 从 function.py (或 module.py) 导入长度计算函数
 from function import calculate_smiles_length
-
 
 def tokenize(molecule, charset_dict, charset_list1, charset_list2, seq_length):
     tokens = [charset_dict['^']]
     i = 0
     istring = 0
-
+    
     while i < len(molecule):
-        double_atom = molecule[i:i + 2]
-
+        double_atom = molecule[i:i+2]
         if double_atom in charset_dict and double_atom in charset_list2:
             tokens.append(charset_dict[double_atom])
             i += 2
@@ -31,371 +29,169 @@ def tokenize(molecule, charset_dict, charset_list1, charset_list2, seq_length):
                 i += 1
                 istring += 1
             else:
-                raise ValueError(
-                    f"Unknown character '{char}' encountered in SMILES: {molecule}"
-                )
-
-    # Add the end-token length
-    istring += 1
-
-    # Pad to seq_length
+                raise ValueError(f"Unknown character '{char}' encountered.")
+        
+    istring += 1        
     tokens += [charset_dict['>']] * (seq_length - len(tokens))
-
-    # Safe truncation for rare over-length cases
-    tokens = tokens[:seq_length]
-
+    tokens = tokens[:seq_length] # 安全截断
+    
     return tokens, istring
 
 
 def augment_train_data(df_train, smiles_col, multiplier):
     """
-    Perform SMILES augmentation using RDKit randomized SMILES.
-
-    multiplier = 15 means each original SMILES is expanded to 15 entries,
-    including the original SMILES itself.
+    使用 RDKit 对训练集进行 SMILES 增强 (Randomized SMILES)
     """
-    print(f"\nPerforming SMILES augmentation with multiplier = {multiplier}.")
-
+    print(f"\n🧬 正在进行 SMILES 增强 (倍数: {multiplier}x)...")
     augmented_rows = []
-
+    
     for _, row in tqdm(df_train.iterrows(), total=len(df_train), desc="Augmenting"):
         smiles = row[smiles_col]
         mol = Chem.MolFromSmiles(smiles)
-
+        
         if mol is None:
             continue
-
-        # Keep the original SMILES
+            
+        # 1. 保留原始的 SMILES
         augmented_rows.append(row.to_dict())
-
-        # Generate multiplier - 1 randomized SMILES
+        
+        # 2. 生成 (multiplier - 1) 个随机化的 SMILES
         for _ in range(multiplier - 1):
             try:
-                rand_smiles = Chem.MolToSmiles(
-                    mol,
-                    canonical=False,
-                    doRandom=True
-                )
-
+                # canonical=False, doRandom=True 是 RDKit 增强的核心
+                rand_smiles = Chem.MolToSmiles(mol, canonical=False, doRandom=True)
                 new_row = row.to_dict()
                 new_row[smiles_col] = rand_smiles
                 augmented_rows.append(new_row)
-
             except Exception:
                 continue
-
+                
+    # 转换为 DataFrame 并打乱顺序
     df_augmented = pd.DataFrame(augmented_rows)
-
-    # Shuffle the augmented training set
-    df_augmented = df_augmented.sample(
-        frac=1,
-        random_state=42
-    ).reset_index(drop=True)
-
-    print(
-        f"Augmentation completed. "
-        f"The training set was expanded from {len(df_train)} to {len(df_augmented)} samples."
-    )
-
+    df_augmented = df_augmented.sample(frac=1, random_state=42).reset_index(drop=True)
+    print(f"✅ 增强完成！训练集分子数从 {len(df_train)} 扩展到了 {len(df_augmented)}")
     return df_augmented
 
 
 def df_to_numpy(df, smiles_col, seq_length):
-    """
-    Convert a DataFrame into tokenized NumPy arrays.
-    """
+    """辅助函数：将 DataFrame 转换为 Tokenize 后的 Numpy 数组"""
     all_smiles_tokens = []
     all_lengths = []
     all_props_processed = []
     valid_count = 0
-
+    
     for _, row in df.iterrows():
         molecule = row[smiles_col]
-
-        # Use two conditional properties: Delta_EST and SA score
-        props = [
-            row['Delta_EST_eV_norm'],
-            row['sa_score_norm']
-        ]
-
+        
+        # 🌟 修改点 1：去掉了 emission_wavelength_nm_norm，只保留 EST 和 SA Score
+        props = [row['Delta_EST_eV_norm'], row['sa_score_norm']]
+        
         try:
-            tokens, length = tokenize(
-                molecule,
-                charset_dict,
-                charset_list1,
-                charset_list2,
-                seq_length
-            )
-
+            tokens, length = tokenize(molecule, charset_dict, charset_list1, charset_list2, seq_length)
             all_smiles_tokens.append(tokens)
             all_lengths.append(length)
             all_props_processed.append(props)
             valid_count += 1
-
-        except ValueError:
+        except ValueError as e:
             continue
-
+            
     X_smiles = np.array(all_smiles_tokens, dtype=np.int64)
     X_lengths = np.array(all_lengths, dtype=np.int64)
     y_props = np.array(all_props_processed, dtype=np.float32)
-
     return X_smiles, X_lengths, y_props, valid_count
 
 
-def write_preprocessing_summary(
-    data_dir,
-    file_path,
-    do_augment,
-    aug_multiplier,
-    train_valid,
-    test_valid,
-    seq_length,
-    prop_cols
-):
+def process_and_split_data(file_path, data_dir, test_size=0.1, random_state=42, do_augment=True, aug_multiplier=15):
     """
-    Save a small text summary of the current preprocessing run.
-    This file is only for record keeping and will not affect training.
+    读取数据 -> 归一化 -> 拆分 -> 保存基础表 -> 增强(可选) -> 保存增强表 -> 计算长度 -> Tokenize -> 保存npy
     """
-    summary_path = os.path.join(data_dir, "preprocessing_summary.txt")
-
-    with open(summary_path, "w", encoding="utf-8") as f:
-        f.write("Preprocessing summary\n")
-        f.write("=" * 60 + "\n")
-        f.write(f"Input CSV: {file_path}\n")
-        f.write(f"Output directory: {data_dir}\n")
-        f.write(f"SMILES augmentation: {do_augment}\n")
-        f.write(f"Augmentation multiplier: {aug_multiplier}\n")
-        f.write(f"Valid training samples: {train_valid}\n")
-        f.write(f"Valid test samples: {test_valid}\n")
-        f.write(f"Sequence length: {seq_length}\n")
-        f.write(f"Property columns: {', '.join(prop_cols)}\n")
-
-    print(f"Saved preprocessing summary to: {summary_path}")
-
-
-def process_and_split_data(
-    file_path,
-    data_dir,
-    test_size=0.1,
-    random_state=42,
-    do_augment=False,
-    aug_multiplier=1
-):
-    """
-    Load data, normalize properties, split data, optionally augment training SMILES,
-    tokenize SMILES, and save all outputs into a fixed token dataset directory.
-    """
-
-    print(f"Loading data from: {file_path}")
+    print(f"📂 Loading data from {file_path}...")
     df = pd.read_csv(file_path)
-
+    
     smiles_col = 'TADF_SMILES'
-
-    # Properties used for conditional generation
-    prop_cols = [
-        'Delta_EST_eV',
-        'sa_score'
-    ]
-
+    # 🌟 修改点 2：将需要处理和归一化的属性列缩减为 2 个
+    prop_cols = ['Delta_EST_eV', 'sa_score']
+    
     df_clean = df.dropna(subset=[smiles_col] + prop_cols).copy()
+    print(f"🧹 去除空值后，剩余有效行数: {len(df_clean)}")
 
-    print(f"Valid rows after removing missing values: {len(df_clean)}")
-
-    # Global normalization keeps train and test on the same scale
-    print("\nCalculating global min/max values and normalizing properties.")
-
+    # 1. 计算极值并进行归一化 (在全局数据上计算，保证 Train 和 Test 的尺度一致)
+    print("\n📊 正在计算极值并进行全局归一化...")
     for col in prop_cols:
         min_val = df_clean[col].min()
         max_val = df_clean[col].max()
         norm_col = f"{col}_norm"
-
-        if max_val == min_val:
-            raise ValueError(
-                f"Column {col} has the same min and max value. Cannot normalize."
-            )
-
         df_clean[norm_col] = (df_clean[col] - min_val) / (max_val - min_val)
 
-        print(f"  {col}: min = {min_val}, max = {max_val}")
-
-    # Split the base dataset before augmentation
-    print(f"\nSplitting base data: train = {1 - test_size:.0%}, test = {test_size:.0%}.")
-
-    df_train, df_test = train_test_split(
-        df_clean,
-        test_size=test_size,
-        random_state=random_state
-    )
-
+    # 2. 🌟 优先拆分数据集
+    print(f"\n✂️ Splitting Base Data (Train: {1-test_size:.0%}, Test: {test_size:.0%})...")
+    df_train, df_test = train_test_split(df_clean, test_size=test_size, random_state=random_state)
+    
     os.makedirs(data_dir, exist_ok=True)
-
-    # Remove stale augmented table if augmentation is disabled
-    old_enhanced_path = os.path.join(data_dir, "train_enhanced.csv")
-    if not do_augment and os.path.exists(old_enhanced_path):
-        os.remove(old_enhanced_path)
-        print(f"Removed old augmented file: {old_enhanced_path}")
-
-    # Save the original train/test split
+    
+    # 🌟 核心需求 1：保存原始拆分的 train.csv 和 test.csv (带归一化性质)
     train_base_path = os.path.join(data_dir, "train.csv")
     test_base_path = os.path.join(data_dir, "test.csv")
-
     df_train.to_csv(train_base_path, index=False)
     df_test.to_csv(test_base_path, index=False)
+    print(f"💾 已保存原始拆分的训练集至: {train_base_path}")
+    print(f"💾 已保存原始拆分的测试集至: {test_base_path}")
 
-    print(f"Saved base training set to: {train_base_path}")
-    print(f"Saved base test set to: {test_base_path}")
-
-    # Optional SMILES augmentation for the training set only
+    # 3. 🌟 对训练集进行数据增强
     if do_augment and aug_multiplier > 1:
-        df_train_enhanced = augment_train_data(
-            df_train,
-            smiles_col,
-            multiplier=aug_multiplier
-        )
-
+        df_train_enhanced = augment_train_data(df_train, smiles_col, multiplier=aug_multiplier)
+        
+        # 🌟 核心需求 2：保存增强后的 train_enhanced.csv
         train_enhanced_path = os.path.join(data_dir, "train_enhanced.csv")
         df_train_enhanced.to_csv(train_enhanced_path, index=False)
-
-        print(f"Saved augmented training set to: {train_enhanced_path}")
-
-        # Use the augmented training set for tokenization
-        df_train = df_train_enhanced
-
+        print(f"💾 已保存增强后的训练集至: {train_enhanced_path}")
+        
+        # 将增强后的数据赋值给 df_train 供后续 Tokenize 使用
+        df_train = df_train_enhanced 
     else:
-        print("SMILES augmentation is disabled. The base training set will be tokenized.")
+        print("⏭️ 未开启数据增强，跳过增强步骤。")
 
-    # Calculate the global maximum token length
-    print("\nCalculating the global sequence length.")
-
-    charset_double_set = set(charset_list2)
-
-    all_smiles = pd.concat(
-        [
-            df_train[smiles_col],
-            df_test[smiles_col]
-        ],
-        ignore_index=True
-    )
-
-    token_lengths = all_smiles.apply(
-        lambda x: calculate_smiles_length(x, charset_double_set)
-    )
-
+    # 4. 合并 Train 和 Test 计算全局最大长度
+    print("\n📏 正在计算全局最佳 sequence_length...")
+    charset_double_set = set(charset_list2) 
+    
+    all_smiles = pd.concat([df_train[smiles_col], df_test[smiles_col]])
+    token_lengths = all_smiles.apply(lambda x: calculate_smiles_length(x, charset_double_set))
+    
     max_len = token_lengths.max()
     seq_length = int(max_len + 5)
+    print(f"  -> 数据集中(含增强)最长的 SMILES Token 数为: {max_len}")
+    print(f"  -> 设定 sequence_length = {max_len} + 5 = {seq_length}")
 
-    print(f"  Longest SMILES token length: {max_len}")
-    print(f"  sequence_length = {max_len} + 5 = {seq_length}")
+    # 5. 分别对 Train 和 Test 进行 Tokenize
+    print("\n⚙️ Tokenizing Train data...")
+    S_train, L_train, P_train, train_valid = df_to_numpy(df_train, smiles_col, seq_length)
+    
+    print("⚙️ Tokenizing Test data...")
+    S_test, L_test, P_test, test_valid = df_to_numpy(df_test, smiles_col, seq_length)
 
-    # Tokenize train and test sets
-    print("\nTokenizing training data.")
-
-    S_train, L_train, P_train, train_valid = df_to_numpy(
-        df_train,
-        smiles_col,
-        seq_length
-    )
-
-    print("Tokenizing test data.")
-
-    S_test, L_test, P_test, test_valid = df_to_numpy(
-        df_test,
-        smiles_col,
-        seq_length
-    )
-
-    # Save NumPy files
+    # 6. 保存为 npy 文件
     np.save(os.path.join(data_dir, "Strain.npy"), S_train)
     np.save(os.path.join(data_dir, "Ltrain.npy"), L_train)
     np.save(os.path.join(data_dir, "Ptrain.npy"), P_train)
-
-    print(f"\nSaved training NumPy files: {train_valid} samples, property shape: {P_train.shape}")
+    print(f"\n💾 Saved Train NPY data: {train_valid} samples, Props shape: {P_train.shape}")
 
     np.save(os.path.join(data_dir, "Stest.npy"), S_test)
     np.save(os.path.join(data_dir, "Ltest.npy"), L_test)
     np.save(os.path.join(data_dir, "Ptest.npy"), P_test)
+    print(f"💾 Saved Test NPY data: {test_valid} samples, Props shape: {P_test.shape}")
 
-    print(f"Saved test NumPy files: {test_valid} samples, property shape: {P_test.shape}")
-
-    write_preprocessing_summary(
-        data_dir=data_dir,
-        file_path=file_path,
-        do_augment=do_augment,
-        aug_multiplier=aug_multiplier,
-        train_valid=train_valid,
-        test_valid=test_valid,
-        seq_length=seq_length,
-        prop_cols=prop_cols
-    )
-
-    print("\nData processing completed successfully.")
-    print(f"Final output directory: {data_dir}")
-
+    print("\n🎉 All data processing and saving completed successfully.")
 
 if __name__ == "__main__":
-
-    # Resolve paths from this file location instead of the current terminal directory.
-    # This keeps the output fixed inside the Firefly-Geni project even when the
-    # script is called from cllama/train_gen.py or another working directory.
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
-
-    # Fixed input file path
-    full_data_csv_path = os.path.join(
-        project_root,
-        "dataset_tadf",
-        "dataset_gen",
-        "gendata_est_sa",
-        "est-all_sa.csv"
-    )
-
-    # Fixed output directory for all downstream scripts
-    output_dir = os.path.join(
-        project_root,
-        "dataset_tadf",
-        "dataset_gen",
-        "gendata_est_sa",
-        "token_dataset"
-    )
-
-    print("\n==================== SMILES Data Processing ====================")
-    print("All tokenized data will be saved into the fixed directory:")
-    print(output_dir)
-
-    while True:
-        aug_input = input(
-            "Enter the augmentation multiplier. Use 1 for no augmentation, e.g., 1, 5, 10, or 15: "
-        ).strip()
-
-        try:
-            aug_multiplier = int(aug_input)
-
-            if aug_multiplier < 1:
-                print("The augmentation multiplier must be at least 1.")
-                continue
-
-            break
-
-        except ValueError:
-            print("Invalid input. Please enter an integer, e.g., 1, 5, 10, or 15.")
-
-    # multiplier = 1 means no augmentation
-    do_augment = aug_multiplier > 1
-
-    # Print run configuration
-    print("\n==================== Running Configuration ====================")
-    print(f"Input CSV      : {full_data_csv_path}")
-    print(f"Output dir     : {output_dir}")
-    print(f"Do augment     : {do_augment}")
-    print(f"Aug multiplier : {aug_multiplier}")
-    print("===============================================================\n")
-
-    # Start data processing
+    # 🌟 修改点 3：更新读取和输出的文件路径
+    full_data_csv_path = '../../dataset_tadf/dataset_gen/gendata_est_sa/est-all_sa.csv'  
+    output_dir = "../../dataset_tadf/dataset_gen/gendata_est_sa/normal"
+    
     process_and_split_data(
-        file_path=full_data_csv_path,
+        file_path=full_data_csv_path, 
         data_dir=output_dir,
-        test_size=0.1,
-        random_state=42,
-        do_augment=do_augment,
-        aug_multiplier=aug_multiplier
+        test_size=0.1,            
+        do_augment=False,         
+        aug_multiplier=20      
     )
