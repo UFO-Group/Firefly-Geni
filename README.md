@@ -520,3 +520,7 @@ export FIREFLY_ENV_FIREFLY_GENI_PYTHON=/path/to/Firefly-Geni/bin/python
 ```
 
 On Windows, use the corresponding `python.exe` paths.
+
+
+## License
+This project is licensed under the MIT License.
