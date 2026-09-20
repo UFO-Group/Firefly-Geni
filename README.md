@@ -471,6 +471,19 @@ For long checkpoint-controller workflows, choose controller mode when prompted.
 4. Gaussian, ORCA, MOMAP, and Multiwfn paths must be configured locally.
 5. The project is designed so that most operations can be launched from `auto_Firefly-Geni.py`.
 
+## 9. Standalone benchmarks and ablation experiments
+
+The following directories contain research comparison experiments only. They are **not part of the automated workflow**, are not launched by `auto_Firefly-Geni.py`, and do not add any tasks to the nine-entry main menu. Run their scripts separately after configuring the required datasets, checkpoints, and device settings.
+
+| Directory | Contents | Documentation |
+|---|---|---|
+| `gen_benchmark/` | Training and generation scripts for AAE, CVAE, LLaMA, and molGPT molecular-generation benchmarks, with shared preprocessing and evaluation utilities. | [Generation benchmark README](gen_benchmark/README.md) |
+| `pre_benchmark_ablation/` | Prediction baselines (MLP, random forest, SVR, and XGBoost) and emitter-only, environmental-label, global, local, and no-integration ablation experiments, including hyperparameter-search and 10-fold evaluation scripts. | [Prediction benchmark and ablation README](pre_benchmark_ablation/README.md) |
+
+These experiments are optional and are not required to run the automated Firefly-Geni pipeline.
+
+---
+
 ## Environment switching in the unified controller
 
 `auto_Firefly-Geni.py` is environment-aware. When it is run from the project root,
