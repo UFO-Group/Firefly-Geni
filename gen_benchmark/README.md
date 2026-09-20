@@ -11,9 +11,25 @@ Molecular generation baselines for Firefly-Geni, including AAE, CVAE, LLaMA, and
 | LLaMA | `LLaMa_enhanced10.py` | `LLaMa-gen.py` | Unconditional |
 | molGPT | `molGPT-10enhanced.py` | `molGPT-gen.py` | Property-conditioned |
 
+## Shared modules
+
+Keep `module/` alongside the training and generation scripts.
+
+| File | Purpose |
+| --- | --- |
+| `char.py` | Character vocabulary and token mappings |
+| `dataload.py` | Token dataset loading |
+| `eval_def.py` | Validity, uniqueness, novelty, and diversity evaluation |
+| `other_function.py` | Sequence decoding and shared utilities |
+| `LLaMa_3_scl.py` | LLaMA model implementation |
+| `gen_data.py` | Dataset preprocessing and token dataset preparation |
+| `function.py` | Preprocessing helper functions used by `gen_data.py` |
+
+The first five modules are required by the training/generation scripts. `gen_data.py` and `function.py` are only needed when preparing datasets; they are not automatically called by the eight benchmark scripts. Iteration-specific preprocessing scripts are not included in this directory.
+
 ## Usage
 
-Use the Firefly-Geni environment and ensure that the shared `module/` package is importable. Configure dataset paths, device settings, and checkpoint paths before running. Train a model first or use a compatible existing checkpoint.
+Run from `gen_benchmark/`. Use the Firefly-Geni environment and ensure that the shared `module/` package is importable. Configure dataset paths, device settings, and checkpoint paths before running. Train a model first or use a compatible existing checkpoint.
 
 Training:
 
