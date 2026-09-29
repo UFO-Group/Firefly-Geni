@@ -18,6 +18,8 @@ import math
 from sklearn.model_selection import KFold
 import itertools
 
+# This DMPNN implementation is adapted from:
+# https://github.com/syan1992/DMPNN_PyG/blob/main/DMPNN.py
 class DMPNN(MessagePassing):
     def __init__(self, node_in_channels, edge_in_channels, hidden_channels, num_layers, dropout_gcn):
         super(DMPNN, self).__init__(aggr='add')
