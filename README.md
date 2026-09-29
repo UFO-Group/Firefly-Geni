@@ -484,6 +484,12 @@ These experiments are optional and are not required to run the automated Firefly
 
 ---
 
+## 10. Analysis scripts and selected results
+
+The [analysis/](analysis/) directory contains standalone notebooks and selected result files supporting the manuscript, including dataset accuracy checks, human scoring, initial-model generation and scaffold analysis, Tanimoto similarity across iterations, B3LYP/MN15 comparisons, and predicted/DFT molecular-property data. These materials are provided for separate analysis and are **not part of the automated workflow or the nine-entry main menu**.
+
+---
+
 ## Environment switching in the unified controller
 
 `auto_Firefly-Geni.py` is environment-aware. When it is run from the project root,
